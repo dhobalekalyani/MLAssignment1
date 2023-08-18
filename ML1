@@ -1,0 +1,80 @@
+# Import the necessary libraries:
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.metrics import mean_squared_error
+
+# Load the dataset using pandas:
+url = 'https://raw.githubusercontent.com/edyoda/data-science-complete-tutorial/master/Data/house_rental_data.csv.txt'
+df = pd.read_csv(url)
+
+# Get insights into the data:
+# Display the first few rows of the dataset
+df.head()
+
+# Get statistical summary of the numerical columns
+df.describe()
+
+# Check the data types of each column
+df.info()
+
+# Check for missing values
+df.isnull().sum()
+
+# Check unique values in categorical columns
+df['furnishingstatus'].unique()
+
+# Calculate correlations between variables
+correlation = df.corr()
+
+Visualize the data:
+# Plot a histogram of the 'price' variable
+plt.hist(df['price'], bins=20)
+plt.xlabel('Price')
+plt.ylabel('Frequency')
+plt.title('Distribution of Price')
+plt.show()
+
+# Create a scatter plot of 'area' vs. 'price'
+plt.scatter(df['area'], df['price'])
+plt.xlabel('Area')
+plt.ylabel('Price')
+plt.title('Area vs. Price')
+plt.show()
+
+# Create a boxplot of 'bhk' vs. 'price'
+sns.boxplot(x='bhk', y='price', data=df)
+plt.xlabel('BHK')
+plt.ylabel('Price')
+plt.title('BHK vs. Price')
+plt.show()
+
+# Manage data for training and testing:
+# Select features and target variable
+X = df[['area', 'bhk', 'latitude', 'longitude', 'propertytype']]
+y = df['price']
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Finding a better value of k:
+# Try different values of k and evaluate their performance
+rmse_scores = []
+k_values = range(1, 21)
+
+for k in k_values:
+    knn = KNeighborsRegressor(n_neighbors=k)
+    knn.fit(X_train, y_train)
+    y_pred = knn.predict(X_test)
+    rmse = mean_squared_error(y_test, y_pred, squared=False)
+    rmse_scores.append(rmse)
+
+# Plot the RMSE scores for different values of k
+plt.plot(k_values, rmse_scores)
+plt.xlabel('k')
+plt.ylabel('RMSE')
+plt.title('RMSE vs. k')
+plt.show()
